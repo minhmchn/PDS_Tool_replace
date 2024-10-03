@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="input-container-left">
+        <label for="const-value">Text cố định:</label><br />
+        <textarea
+          name="const_value"
+          class="box-shadow"
+          id="const-value"
+        ></textarea>
+        <br />
+
+        <label for="input">Text cần lặp lại:</label><br />
+        <textarea name="input" id="input">
+(A5X3x1_1_1_1 & MIS(A5X3x1_1_1_2)) OR 
+        </textarea>
+      </div>
+
+      <div class="input-container">
+        <br />
+
+        <!-- Tiêu đề cho các ô nhập liệu -->
+        <label for="replace_string">Đoạn text cần thay đổi:</label>
+        <textarea
+          name="replace_string"
+          class="box-shadow"
+          id="replace_string"
+          placeholder="Enter string to replace (e.g., A5X3x1_)"
+        ></textarea>
+        <br />
+
+        <label for="start_number">Số nhập bắt đầu:</label>
+        <textarea
+          name="start_number"
+          class="box-shadow"
+          id="start_number"
+          placeholder="Start number"
+        ></textarea>
+        <br />
+
+        <label for="end_number">Số nhập kết thúc:</label>
+        <textarea
+          name="end_number"
+          class="box-shadow"
+          id="end_number"
+          placeholder="End number"
+        ></textarea>
+
+        <button class="comic-button" onclick="getText()">Submit</button>
+      </div>
+    </div>
+  </body>
+</html>
