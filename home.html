@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 50vh;
+        margin: 0;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px; /* Khoảng cách giữa các nút */
+      }
+
+      .link-button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+        background-color: #3498db;
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        box-shadow: 5px 5px 0px #2c3e50;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .link-button:hover {
+        background-color: #2980b9;
+      }
+
+      .link-button:active {
+        box-shadow: none;
+        transform: translateY(4px);
+      }
+
+      h1 {
+        margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và các nút */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PDS Tool</h1>
+    <div class="container">
+      <a href="index.html" class="link-button">TOOL_REPLACE</a>
+      <a href="#" class="link-button">Xem thêm</a>
+    </div>
+  </body>
+</html>
