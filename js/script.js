@@ -5,10 +5,28 @@ function goHome() {
     window.location.href = "../index.html";
 }
 
+// Function to generate dynamic input fields based on user input
+function generateInputFields() {
+    const numberOfStrings = document.getElementById('number_of_strings').value;
+    const dynamicFieldsContainer = document.getElementById('dynamicFields');
+
+    // Clear previous fields
+    dynamicFieldsContainer.innerHTML = '';
+
+    for (let i = 1; i <= numberOfStrings; i++) {
+        const newField = document.createElement('div');
+        newField.classList.add('form-group');
+        newField.innerHTML = `
+            <label for="replace_string_${i}">Đoạn text cần thay đổi ${i}:</label>
+            <textarea name="replace_string_${i}" id="replace_string_${i}" class="form-control" placeholder="Enter string to replace"></textarea>
+        `;
+        dynamicFieldsContainer.appendChild(newField);
+    }
+}
+
 function getText() {
     const inputData = $("#input").val(); // Lấy dữ liệu đầu vào
     const const_value = $("#const-value").val(); // Giá trị cố định ban đầu
-    const replace_string = $("#replace_string").val(); // Lấy chuỗi cần thay đổi
     const start_number = parseInt($("#start_number").val()); // Số bắt đầu
     const end_number = parseInt($("#end_number").val()); // Số kết thúc
 
@@ -20,10 +38,21 @@ function getText() {
 
     output = const_value + "\n"; // Khởi tạo đầu ra với giá trị cố định
 
-    // Dùng replace chuỗi cần thay đổi và số trong khoảng từ start_number đến end_number
-    for (var i = start_number; i <= end_number; i++) {
-        let regex = new RegExp(replace_string + "\\d+", "g"); // Tìm chuỗi và số cần thay đổi
-        let rep_1 = inputData.replace(regex, replace_string + i); // Thay thế số sau chuỗi
+    // Lấy tất cả các đoạn text cần thay đổi
+    const numberOfStrings = document.getElementById('number_of_strings').value;
+
+    for (let j = start_number; j <= end_number; j++) {
+        let rep_1 = inputData; // Khởi tạo rep_1 với inputData để thay thế các đoạn văn bản
+
+        for (let i = 1; i <= numberOfStrings; i++) {
+            const replaceString = document.getElementById(`replace_string_${i}`).value; // Lấy đoạn text cần thay đổi
+            
+            if (replaceString) { // Kiểm tra xem có nhập đoạn text hay không
+                let regex = new RegExp(replaceString + "\\d*", "g"); // Tìm chuỗi và số cần thay đổi
+                rep_1 = rep_1.replace(regex, replaceString + j); // Thay thế số sau chuỗi
+            }
+        }
+        
         output += rep_1 + "\n"; // Thêm kết quả vào output
     }
 

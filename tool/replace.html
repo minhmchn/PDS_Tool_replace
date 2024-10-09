@@ -1,83 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="../css/styles.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/script.js" defer></script>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <header class="header">
-        <h1>Form SPSS</h1>
-        <p>Dự liệu lặp lại nhiều lần</p>
-      </header>
+        <header class="header">
+            <h1>Form SPSS</h1>
+            <p>Dữ liệu lặp lại nhiều lần</p>
+        </header>
 
-      <section class="content">
-        <div class="form-section">
-          <div class="form-group">
-            <label for="const-value">Text cố định:</label>
-            <textarea name="const_value" id="const-value" class="form-control"></textarea>
-          </div>
+        <section class="content">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="const-value">Text cố định:</label>
+                    <textarea name="const_value" id="const-value" class="form-control"></textarea>
+                </div>
 
-          <div class="form-group">
-            <label for="input">Text cần lặp lại:</label>
-            <textarea name="input" id="input" class="form-control">(A5X3x1_1_1_1 & MIS(A5X3x1_1_1_2)) OR</textarea>
-          </div>
+                <div class="form-group">
+                    <label for="input">Text cần lặp lại:</label>
+                    <textarea name="input" id="input" class="form-control">(A5X3x1_1_1_1 & MIS(A5X3x1_1_1_2)) OR</textarea>
+                </div>
 
-          <div class="form-group">
-            <label for="replace_string">Đoạn text cần thay đổi:</label>
-            <textarea
-              name="replace_string"
-              id="replace_string"
-              class="form-control"
-              placeholder="Enter string to replace (e.g., A5X3x1_)"
-            ></textarea>
-          </div>
+                <div class="form-group">
+                    <label for="number_of_strings">Số lượng đoạn text cần thay đổi:</label>
+                    <input
+                        type="number"
+                        name="number_of_strings"
+                        id="number_of_strings"
+                        class="form-control"
+                        placeholder="Nhập số lượng đoạn text"
+                        min="1"
+                        oninput="generateInputFields()"
+                    />
+                </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="start_number">Số nhập bắt đầu:</label>
-              <textarea
-                name="start_number"
-                id="start_number"
-                class="form-control"
-                placeholder="Start number"
-              ></textarea>
+                <!-- Placeholder for dynamic input fields -->
+                <div id="dynamicFields"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start_number">Số nhập bắt đầu:</label>
+                        <textarea
+                            name="start_number"
+                            id="start_number"
+                            class="form-control"
+                            placeholder="Start number"
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_number">Số nhập kết thúc:</label>
+                        <textarea
+                            name="end_number"
+                            id="end_number"
+                            class="form-control"
+                            placeholder="End number"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-submit" onclick="getText()">Submit</button>
+                    <button class="btn-home" onclick="goHome()">Back to Home</button>
+                </div>
             </div>
-
-            <div class="form-group">
-              <label for="end_number">Số nhập kết thúc:</label>
-              <textarea
-                name="end_number"
-                id="end_number"
-                class="form-control"
-                placeholder="End number"
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="button-group">
-            <button class="btn-submit" onclick="getText()">Submit</button>
-            <button class="btn-home" onclick="goHome()">Back to Home</button>
-          </div>
-        </div>
-      </section>
+        </section>
     </div>
 
     <!-- Notification Box -->
     <div id="notification" class="notification" style="display: none;">
-      <span class="close-notification" onclick="closeNotification()">&times;</span>
-      <h2>Generated Text</h2>
-      <textarea id="generatedText" class="generated-text" readonly></textarea>
-      <button class="btn-copy" onclick="copyText()">Copy</button>
+        <span class="close-notification" onclick="closeNotification()">&times;</span>
+        <h2>Generated Text</h2>
+        <textarea id="generatedText" class="generated-text" readonly></textarea>
+        <button class="btn-copy" onclick="copyText()">Copy</button>
     </div>
 
     <!-- Temporary Copy Notification -->
     <div id="copyNotification" class="copy-notification" style="display: none;">
-      Text copied to clipboard!
+        Text copied to clipboard!
     </div>
-  </body>
+</body>
 </html>
