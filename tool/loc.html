@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel File Reader and Filter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Upload and Filter Excel File</h1>
+    
+    <!-- Form upload file -->
+    <input type="file" id="upload" accept=".xlsx, .xls" />
+
+    <!-- Dropdown lọc dữ liệu -->
+    <label for="filter">Filter by Column:</label>
+    <select id="filter"></select>
+    
+    <!-- Bảng hiển thị dữ liệu -->
+    <table id="dataTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        document.getElementById('upload').addEventListener('change', handleFile, false);
+
+        function handleFile(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                var jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                displayData(jsonData); // Hiển thị dữ liệu ra bảng
+                populateFilterOptions(jsonData); // Thêm lựa chọn lọc
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function displayData(data) {
+            var tableHead = document.getElementById('tableHead');
+            var tableBody = document.getElementById('tableBody');
+            tableHead.innerHTML = ''; // Xóa nội dung cũ
+            tableBody.innerHTML = ''; // Xóa nội dung cũ
+
+            // Hiển thị tiêu đề cột (dòng đầu tiên của file Excel)
+            var headers = data[0];
+            var headerRow = '<tr>';
+            headers.forEach(function(header) {
+                headerRow += `<th>${header}</th>`;
+            });
+            headerRow += '</tr>';
+            tableHead.innerHTML = headerRow;
+
+            // Hiển thị từng hàng dữ liệu từ dòng thứ 2 trở đi
+            for (var i = 1; i < data.length; i++) {
+                var row = '<tr>';
+                data[i].forEach(function(cell) {
+                    row += `<td>${cell || ''}</td>`;
+                });
+                row += '</tr>';
+                tableBody.innerHTML += row;
+            }
+        }
+
+        function populateFilterOptions(data) {
+            var filterSelect = document.getElementById('filter');
+            filterSelect.innerHTML = ''; // Xóa các lựa chọn cũ
+            var headers = data[0]; // Lấy tiêu đề cột
+
+            headers.forEach(function(header, index) {
+                var option = document.createElement('option');
+                option.value = index;
+                option.text = header;
+                filterSelect.appendChild(option);
+            });
+
+            // Lọc dữ liệu khi lựa chọn cột thay đổi
+            filterSelect.addEventListener('change', function() {
+                filterData(data, filterSelect.value);
+            });
+        }
+
+        function filterData(data, columnIndex) {
+            var tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Xóa dữ liệu cũ trong bảng
+
+            // Hiển thị các hàng dữ liệu chỉ khi có giá trị tại cột đã chọn
+            for (var i = 1; i < data.length; i++) {
+                if (data[i][columnIndex] !== undefined && data[i][columnIndex] !== null) {
+                    var row = '<tr>';
+                    data[i].forEach(function(cell) {
+                        row += `<td>${cell || ''}</td>`;
+                    });
+                    row += '</tr>';
+                    tableBody.innerHTML += row;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
