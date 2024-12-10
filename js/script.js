@@ -24,6 +24,13 @@ function generateInputFields() {
     }
 }
 
+// Function to escape special characters for regex
+function escapeRegex(string) {
+    // Escapes special characters used in regex
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Function to generate and process text
 function getText() {
     const inputData = $("#input").val(); // Lấy dữ liệu đầu vào
     const const_value = $("#const-value").val(); // Giá trị cố định ban đầu
@@ -45,19 +52,25 @@ function getText() {
         let rep_1 = inputData; // Khởi tạo rep_1 với inputData để thay thế các đoạn văn bản
 
         for (let i = 1; i <= numberOfStrings; i++) {
-            const replaceString = document.getElementById(`replace_string_${i}`).value; // Lấy đoạn text cần thay đổi
-            
-            if (replaceString) { // Kiểm tra xem có nhập đoạn text hay không
-                let regex = new RegExp(replaceString + "\\d*", "g"); // Tìm chuỗi và số cần thay đổi
-                rep_1 = rep_1.replace(regex, replaceString + j); // Thay thế số sau chuỗi
+            const replaceString = document.getElementById(`replace_string_${i}`).value;
+
+            if (replaceString) { 
+                // Thoát ký tự đặc biệt để tránh lỗi regex
+                const escapedString = escapeRegex(replaceString);
+
+                // Tạo regex an toàn
+                let regex = new RegExp(escapedString + "\\d*", "g");
+
+                // Thay thế số sau chuỗi
+                rep_1 = rep_1.replace(regex, replaceString + j);
             }
         }
-        
+
         output += rep_1 + "\n"; // Thêm kết quả vào output
     }
 
     // Hiển thị kết quả trong khung thông báo
-    $("#generatedText").val(output); // Sửa lại để sử dụng ID chính xác
+    $("#generatedText").val(output);
     $("#notification").show(); // Hiển thị khung thông báo
 }
 
