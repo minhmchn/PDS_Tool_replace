@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .header {
+            text-align: center;
+        }
+        .header img {
+            width: 150px;
+        }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .section {
+            width: 48%;
+        }
+        .section h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .section p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f4f4f4;
+        }
+        .table td:nth-child(6) {
+            text-align: right;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="header">
+            <img src="https://www.udemy.com/staticx/udemy/images/v7/logo-udemy.svg" alt="Udemy Logo">
+            <h2>INVOICE</h2>
+        </div>
+        <div class="invoice-details">
+            <div class="section">
+                <h4>Provided by:</h4>
+                <p>Udemy</p>
+                <p>600 Harrison St</p>
+                <p>San Francisco, CA 94107</p>
+                <p>US</p>
+                <p>VAT #: 9000000823</p>
+            </div>
+            <div class="section">
+                <h4>Provided to:</h4>
+                <p>Tran Thi Lan Huong</p>
+                <p>Invoice #: VN2024-100363</p>
+                <p>Invoice date: 12/26/24</p>
+                <p>Place: 600 Harrison St, San Francisco, CA</p>
+            </div>
+        </div>
+        <table  class="pure-table pure-table-bordered w-200 pure-table-striped common fixed" >
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>List Price</th>
+                    <th>Discount</th>
+                    <th>Sale Price</th>
+                    <th>Tax</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>[한글자막] 100일 코딩 챌린지 - Web Development 부트캠프</td>
+                    <td>449,000</td>
+                    <td></td>
+                    <td>332,381</td>
+                    <td>16,619 (5%)</td>
+                    <td>349,000</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <th colspan="2"></th>
+                    <th>332,381</th>
+                    <th>16,619</th>
+                    <th>VND 349,000</th>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="print-button" onclick="window.print()">Print Invoice</button>
+        <div class="footer">
+            <p>Thank you for your business!</p>
+        </div>
+    </div>
+</body>
+</html>
