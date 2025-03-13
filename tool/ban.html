@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bàn làm việc và cá tính</title>
+    <link rel="stylesheet" href="../css/ban.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>
+        Theo Lifehack, cách sắp xếp bàn làm việc sẽ tiết lộ khá chính xác về cá
+        tính con người bạn. Bàn của bạn thuộc dạng nào dưới đây? Click vào hình
+        để xem đáp án.
+      </h1>
+      <table
+        align="center"
+        border="1"
+        cellpadding="1"
+        cellspacing="0"
+        class="tbl_insert"
+      >
+        <tbody>
+          <tr>
+            <td style="text-align: center">
+              <img src="../img/xep1.jpg" alt="Bàn làm việc lộn xộn" />
+              <p onclick="showAnswer('lộn xộn')">Bàn làm việc lộn xộn</p>
+            </td>
+            <td style="text-align: center">
+              <img src="../img/xep2.jpg" alt="Bàn làm việc tối giản" />
+              <p onclick="showAnswer('tối giản')">Bàn làm việc tối giản</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: center">
+              <img src="../img/xep3.jpg" alt="Bàn làm việc mở rộng" />
+              <p onclick="showAnswer('mở rộng')">Bàn làm việc mở rộng</p>
+            </td>
+            <td style="text-align: center">
+              <img
+                src="../img/xep4.jpg"
+                alt="Bàn trang trí nhiều đồ yêu thích"
+              />
+              <p onclick="showAnswer('trang trí')">
+                Bàn trang trí nhiều đồ yêu thích
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="answer"></div>
+    </div>
+    <script src="../js/ban.js"></script>
+  </body>
+</html>
