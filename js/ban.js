@@ -7,10 +7,10 @@ function showAnswer(type) {
   }
 
   const answers = {
-    "lộn xộn": "Bạn là người sáng tạo và có thể làm việc trong môi trường hỗn loạn.",
-    "tối giản": "Bạn thích sự đơn giản và ngăn nắp, luôn tập trung vào những điều quan trọng.",
-    "mở rộng": "Bạn là người có tầm nhìn rộng và thích khám phá những cơ hội mới.",
-    "trang trí": "Bạn là người có gu thẩm mỹ và thích thể hiện cá tính qua không gian làm việc."
+    "lộn xộn": "Bạn là người sáng tạo và có thể làm việc trong môi trường hỗn loạn.(귀하께서는 창의적이시며 혼란스러운 환경에서도 업무를 수행하실 수 있습니다.) ",
+    "tối giản": "Bạn thích sự đơn giản và ngăn nắp, luôn tập trung vào những điều quan trọng.(당신은 단순하고 효율적인 것을 좋아하며, 항상 중요한 일에만 집중합니다.)",
+    "mở rộng": "Bạn là người có tầm nhìn rộng và thích khám phá những cơ hội mới.(당신은 시야가 넓고 새로운 기회를 탐색하는 것을 좋아합니다.) ",
+    "trang trí": "Bạn là người có gu thẩm mỹ và thích thể hiện cá tính qua không gian làm việc.(귀하께서는 미적 감각이 뛰어나시며, 작업 공간을 통해 귀하만의 개성을 표현하시는 것을 즐기십니다.) "
   };
 
   const answerText = answers[type] || "Hãy chọn một loại bàn làm việc để xem đáp án.";
