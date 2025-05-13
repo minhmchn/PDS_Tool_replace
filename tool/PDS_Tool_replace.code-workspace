@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../../Downloads/jquery-in-action-master"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "PDS_Tool_replace"
+	}
+}
