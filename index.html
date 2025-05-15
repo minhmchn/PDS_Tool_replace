@@ -12,19 +12,24 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 50vh;
+        height: 100vh;
         margin: 0;
+        background-color: #f0f0f0;
+        overflow: hidden; /* Ẩn thanh cuộn */
       }
 
       .container {
         display: flex;
-        flex-direction: column;
-        gap: 20px; /* Khoảng cách giữa các nút */
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        max-width: 1000px;
+        padding: 20px;
       }
 
       .link-button {
         display: inline-block;
-        padding: 10px 20px;
+        padding: 15px 30px;
         font-size: 20px;
         font-weight: bold;
         color: white;
@@ -35,10 +40,14 @@
         box-shadow: 5px 5px 0px #2c3e50;
         transition: all 0.3s ease;
         cursor: pointer;
+        flex: 0 0 calc(30% - 20px);
+        text-align: center;
       }
 
       .link-button:hover {
         background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 5px 7px 0px #2c3e50;
       }
 
       .link-button:active {
@@ -47,9 +56,43 @@
       }
 
       h1 {
-        margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và các nút */
+        margin-bottom: 30px;
+        color: #333;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      /* CSS cho hiệu ứng hoa mai rơi */
+      @keyframes fall {
+        to {
+          transform: translateY(105vh);
+        }
+      }
+
+      .hoa-mai {
+        position: absolute;
+        top: -50px;
+        width: 25px;
+        height: 25px;
+        background-image: url('img/hoa-mai.png');
+        background-size: contain;
+        animation: fall linear infinite;
       }
     </style>
+    <script>
+      window.onload = function () {
+        const container = document.querySelector('.container');
+        const numberOfFlowers = 20;
+
+        for (let i = 0; i < numberOfFlowers; i++) {
+          const hoaMai = document.createElement('div');
+          hoaMai.classList.add('hoa-mai');
+          hoaMai.style.left = Math.random() * 100 + 'vw';
+          hoaMai.style.animationDuration = Math.random() * 5 + 5 + 's'; // Thời gian rơi
+          hoaMai.style.animationDelay = Math.random() * 2 + 's'; // Độ trễ
+          container.appendChild(hoaMai);
+        }
+      };
+    </script>
   </head>
   <body>
     <h1>PDS Tool</h1>
@@ -59,8 +102,6 @@
       <a href="tool/test.html" class="link-button">SĐT</a>
       <a href="tool/ban.html" class="link-button">BAN</a>
       <a href="tool/unique.html" class="link-button">UNIQUE</a>
-
-      <a href="#" class="link-button">Xem thêm</a>
     </div>
   </body>
 </html>
