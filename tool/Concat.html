@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Condition Generator</title>
+<style>
+  :root{--bg:#fff;--fg:#111;--muted:#666;--bd:#ddd;--pri:#0d6efd;}
+  body{font-family:system-ui,Segoe UI,Arial; margin:20px; color:var(--fg); background:var(--bg);}
+  h1{font-size:18px;margin:0 0 12px}
+  .row{display:grid;gap:10px;margin-bottom:14px}
+  @media (min-width:900px){.row{grid-template-columns:1fr 1fr}}
+  label{font-weight:600;margin-bottom:6px;display:block}
+  textarea, input, select, button{font:inherit}
+  textarea{width:100%;min-height:120px;padding:10px;border:1px solid var(--bd);border-radius:8px}
+  input[type="text"]{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px}
+  .hint{color:var(--muted);font-size:12px;margin-top:4px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  button{padding:10px 14px;border:1px solid var(--bd);border-radius:10px;background:#f7f7f7;cursor:pointer}
+  button.primary{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .small{font-size:12px}
+  .badge{display:inline-block;padding:2px 8px;border:1px solid var(--bd);border-radius:999px}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  .ok{color:#0a7a1f}.warn{color:#a66d00}.err{color:#c30010}
+  .status{margin-left:6px}
+</style>
+</head>
+<body>
+  <h1>Generator: '[LOOP_KEY:C2_L]'=='{n}' && [C2_R1={n}]</h1>
+
+  <!-- TEMPLATE INPUT -->
+  <div class="row">
+    <div>
+      <label for="tpl">Nhập nội dung </label>
+      <textarea id="tpl" class="mono" placeholder="Dùng {n} làm chỗ chèn số"></textarea>
+      <div class="hint">
+        Dùng placeholder <span class="badge mono">{n}</span> ở mọi vị trí bạn muốn thay bằng số.
+        Ví dụ: <span class="mono"></span>
+      </div>
+    </div>
+
+    <!-- NUMBERS INPUT -->
+    <div>
+      <label for="nums">Nhập danh sách số</label>
+      <textarea id="nums" class="mono" placeholder="Cách nhau bởi khoảng trắng, dấu phẩy hoặc xuống dòng"></textarea>
+      <div class="inline small">
+        <label for="sep">Phân tách kết quả bằng</label>
+        <select id="sep">
+          <option value="\n">Xuống dòng</option>
+          <option value=", ">Dấu phẩy + khoảng trắng</option>
+          <option value="; ">Dấu chấm phẩy + khoảng trắng</option>
+        </select>
+        <label class="small"><input type="checkbox" id="dedupe" checked /> Loại bỏ trùng</label>
+        <label class="small"><input type="checkbox" id="numericOnly" /> Chỉ nhận số (lọc ký tự khác)</label>
+        <span id="parseStatus" class="status"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div>
+    <label for="out">Kết quả</label>
+    <textarea id="out" class="mono" readonly placeholder="Kết quả sẽ hiển thị ở đây"></textarea>
+    <div class="actions">
+      <button class="primary" id="btnGen">Generate</button>
+      <button id="btnCopy">Copy</button>
+      <button id="btnDl">Download .txt</button>
+      <span id="genStatus" class="status"></span>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $tpl = document.getElementById('tpl');
+  const $nums = document.getElementById('nums');
+  const $sep = document.getElementById('sep');
+  const $dedupe = document.getElementById('dedupe');
+  const $numericOnly = document.getElementById('numericOnly');
+  const $out = document.getElementById('out');
+  const $btnGen = document.getElementById('btnGen');
+  const $btnCopy = document.getElementById('btnCopy');
+  const $btnDl = document.getElementById('btnDl');
+  const $parseStatus = document.getElementById('parseStatus');
+  const $genStatus = document.getElementById('genStatus');
+
+  function parseNumbers(raw){
+    let tokens = raw.trim().split(/[\s,;]+/).filter(Boolean);
+    let invalid = 0;
+
+    if ($numericOnly.checked){
+      tokens = tokens.map(t => {
+        const m = t.match(/-?\d+/); // lấy chuỗi số liên tục đầu tiên (âm/ dương)
+        return m ? m[0] : null;
+      }).filter(Boolean);
+    } else {
+      // nếu không bắt buộc numericOnly, vẫn cảnh báo những token không thuần số
+      invalid = tokens.filter(t => !/^-?\d+$/.test(t)).length;
+    }
+
+    if ($dedupe.checked){
+      tokens = Array.from(new Set(tokens));
+    }
+
+    return { list: tokens, invalid };
+  }
+
+  function generate(){
+    const tpl = $tpl.value;
+    const sep = $sep.value === "\\n" ? "\n" : $sep.value;
+
+    $genStatus.textContent = "";
+    $out.value = "";
+
+    if (!tpl.includes("{n}")){
+      $genStatus.textContent = "❗ Template thiếu placeholder {n}";
+      $genStatus.className = "status err";
+      return;
+    }
+
+    const { list, invalid } = parseNumbers($nums.value);
+
+    // trạng thái parse
+    if (invalid > 0){
+      $parseStatus.textContent = `⚠ Có ${invalid} token không phải số`;
+      $parseStatus.className = "status warn";
+    } else {
+      $parseStatus.textContent = `✓ ${list.length} mã hợp lệ`;
+      $parseStatus.className = "status ok";
+    }
+
+    if (list.length === 0){
+      $genStatus.textContent = "❗ Không có số hợp lệ để sinh kết quả";
+      $genStatus.className = "status err";
+      return;
+    }
+
+    const out = list.map(n => tpl.replaceAll("{n}", n)).join(sep);
+    $out.value = out;
+    $genStatus.textContent = `✓ Đã sinh ${list.length} dòng`;
+    $genStatus.className = "status ok";
+  }
+
+  function copyOut(){
+    if (!$out.value){
+      $genStatus.textContent = "❗ Không có gì để copy";
+      $genStatus.className = "status err";
+      return;
+    }
+    navigator.clipboard.writeText($out.value).then(()=>{
+      $genStatus.textContent = "✓ Copied vào clipboard";
+      $genStatus.className = "status ok";
+    }).catch(()=>{
+      $genStatus.textContent = "❗ Trình duyệt chặn copy tự động";
+      $genStatus.className = "status warn";
+    });
+  }
+
+  function downloadOut(){
+    if (!$out.value){
+      $genStatus.textContent = "❗ Không có gì để tải";
+      $genStatus.className = "status err";
+      return;
+    }
+    const blob = new Blob([$out.value], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "conditions.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    $genStatus.textContent = "✓ Đã tải conditions.txt";
+    $genStatus.className = "status ok";
+  }
+
+  // events
+  $btnGen.addEventListener('click', generate);
+  $btnCopy.addEventListener('click', copyOut);
+  $btnDl.addEventListener('click', downloadOut);
+
+  // auto update khi đổi tùy chọn
+  [$sep, $dedupe, $numericOnly].forEach(el => el.addEventListener('change', generate));
+  // gợi ý: generate lần đầu
+  generate();
+})();
+</script>
+</body>
+</html>
