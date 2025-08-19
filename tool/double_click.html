@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ctrl+H Thay thế nhiều trường hợp (Grid kiểu Excel)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background:#f7f9fc; color:#111; }
+    h2 { margin: 0 0 10px; }
+    button { padding: 8px 12px; margin: 4px; cursor: pointer; border-radius:8px; border:1px solid #c7ced6; background:#fff; }
+    button.primary{ background:#2563eb; border-color:#2563eb; color:#fff; }
+    button.ghost{ background:transparent; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:6px 0 12px; }
+
+    /* Grid kiểu Excel */
+    .sheet-wrap{ overflow:auto; border:1px solid #cbd5e1; border-radius:10px; background:#fff; margin-bottom:12px; }
+    table.sheet{ border-collapse:collapse; width:100%; min-width:520px; table-layout:fixed; }
+    .sheet thead th{ position:sticky; top:0; background:#f1f5f9; z-index:1; font-weight:600; color:#334155; border-bottom:1px solid #cbd5e1; }
+    .sheet th, .sheet td{ border:1px solid #e2e8f0; padding:6px 8px; }
+    .sheet th{ text-align:center; }
+    .sheet td{ background:#fff; }
+    .sheet td[contenteditable] { outline:none; }
+    .sheet td[contenteditable]:focus{ box-shadow: inset 0 0 0 2px #2563eb33; }
+    .muted{ color:#64748b; font-size:12px; }
+  </style>
+</head>
+<body>
+  <h2>Thay thế nội dung (giống Ctrl+H) – hỗ trợ nhập như Excel</h2>
+
+  <h3>Nội dung gốc (Grid kiểu Excel)</h3>
+  <div class="toolbar">
+    <button id="btnInputPaste">Dán từ Excel</button>
+    <button id="btnInputCopy">Copy TSV</button>
+    <button id="btnInputAddRow">+ Hàng</button>
+  </div>
+  <div class="sheet-wrap" id="inputWrap">
+    <table class="sheet" id="inputSheet">
+      <thead>
+        <tr><th>Cột 1</th></tr>
+      </thead>
+      <tbody id="inputBody"></tbody>
+    </table>
+  </div>
+
+  <h3>Danh sách thay thế (Grid kiểu Excel – có thể dán từ Excel/Google Sheets)</h3>
+  <div class="toolbar">
+    <button id="btnAddRow">+ Thêm dòng</button>
+    <button id="btnPasteTSV">Dán từ Excel</button>
+    <button id="btnCopyTSV">Copy TSV</button>
+  </div>
+  <div class="sheet-wrap" id="sheetWrap">
+    <table class="sheet" id="sheet" aria-label="Danh sách thay thế">
+      <thead>
+        <tr>
+          <th>Find</th>
+          <th>Replace</th>
+          <th>Xóa</th>
+        </tr>
+      </thead>
+      <tbody id="gridBody"></tbody>
+    </table>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" id="btnApply">Chạy thay thế</button>
+    <button id="btnReload">↻ Load lại</button>
+    <button id="btnCopyOutput">📋 Copy kết quả</button>
+  </div>
+
+  <h3>Kết quả (Grid kiểu Excel)</h3>
+  <div class="toolbar">
+    <button id="btnOutputCopy">Copy TSV</button>
+    <button id="btnOutputClear">🗑️ Xóa</button>
+  </div>
+  <div class="sheet-wrap" id="outputWrap">
+    <table class="sheet" id="outputSheet">
+      <thead>
+        <tr><th>Cột 1</th></tr>
+      </thead>
+      <tbody id="outputBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const gridBody = document.getElementById('gridBody');
+    const inputBody = document.getElementById('inputBody');
+    const outputBody = document.getElementById('outputBody');
+
+    function escapeHtml(s){
+      return (s+"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); alert('Đã copy!'); }
+      catch(e){ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); try{ document.execCommand('copy'); alert('Đã copy!'); } catch(err){ alert('Copy thất bại.'); } finally{ document.body.removeChild(ta); } }
+    }
+
+    function splitRulesSmart(text){
+      const norm = (text||'')
+        .replace(/\r/g,'')       // CR -> ""
+        .replace(/\u00A0/g,' '); // NBSP -> space thường
+      const chunks = [];
+      norm.split('\n').forEach(line=>{
+        const l = line.trim();
+        if(!l) return;
+        const parts = l.split(/(?:\s{2,}|\t+)(?=(?:'?\[LOOP_KEY:|\[))/g);
+        parts.forEach(p=>{ const s = p.trim(); if(s) chunks.push(s); });
+      });
+      return chunks;
+    }
+
+    function setInputLines(text){
+      inputBody.innerHTML='';
+      const lines = Array.isArray(text) ? text : splitRulesSmart(text);
+      lines.forEach(l=>{
+        const t=(l||'').trim();
+        if(!t) return;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td contenteditable="true" spellcheck="false">${escapeHtml(t)}</td>`;
+        inputBody.appendChild(tr);
+      });
+    }
+
+    function getInputLines(){
+      return Array.from(inputBody.querySelectorAll('tr')).map(tr=>tr.querySelector('td').innerText.trim());
+    }
+
+    function setOutputLines(lines){
+      outputBody.innerHTML='';
+      (lines||[]).forEach(l=>{
+        const t=(l||'').trim(); if(!t) return;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td contenteditable="true" spellcheck="false">${escapeHtml(t)}</td>`;
+        outputBody.appendChild(tr);
+      });
+    }
+
+    function getOutputLines(){
+      return Array.from(outputBody.querySelectorAll('tr')).map(tr=>tr.querySelector('td').innerText.trim());
+    }
+
+    function addRow(findVal = '', replaceVal = ''){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td contenteditable="true" spellcheck="false">${escapeHtml(findVal)}</td>
+        <td contenteditable="true" spellcheck="false">${escapeHtml(replaceVal)}</td>
+        <td><button class="ghost">✕</button></td>
+      `;
+      tr.querySelector('button').addEventListener('click', ()=> tr.remove());
+      gridBody.appendChild(tr);
+    }
+
+    function getGridData(){
+      const rows = [];
+      gridBody.querySelectorAll('tr').forEach(tr=>{
+        const tds = tr.querySelectorAll('td');
+        const find = tds[0]?.innerText.trim() || '';
+        const repl = tds[1]?.innerText.trim() || '';
+        if(find) rows.push([find,repl]);
+      });
+      return rows;
+    }
+
+    // === Input controls ===
+    document.getElementById('btnInputPaste').addEventListener('click', async()=>{
+      try{ const text=await navigator.clipboard.readText(); if(text) setInputLines(text); }catch{}
+    });
+    document.getElementById('btnInputCopy').addEventListener('click', ()=>{
+      const t=getInputLines().join('\n'); if(!t){alert('Không có dữ liệu');return;} copyText(t);
+    });
+    document.getElementById('btnInputAddRow').addEventListener('click', ()=>{
+      const tr=document.createElement('tr'); tr.innerHTML='<td contenteditable="true" spellcheck="false"></td>'; inputBody.appendChild(tr);
+    });
+    document.getElementById('inputWrap').addEventListener('paste',(e)=>{
+      const text=(e.clipboardData||window.clipboardData).getData('text'); if(text){ e.preventDefault(); setInputLines(text); }
+    });
+
+    // === Apply replace ===
+    document.getElementById('btnApply').addEventListener('click', ()=>{
+      const lines=getInputLines();
+      const pairs=getGridData();
+      const out=lines.map(line=>{
+        let t=line;
+        for(const [f,r] of pairs){ if(!f) continue; const re=new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'); t=t.replace(re,r); }
+        return t;
+      });
+      setOutputLines(out);
+    });
+
+    document.getElementById('btnReload').addEventListener('click', ()=> setOutputLines(getInputLines()));
+    document.getElementById('btnCopyOutput').addEventListener('click', ()=> copyText(getOutputLines().join('\n')));
+    document.getElementById('btnOutputCopy').addEventListener('click', ()=> copyText(getOutputLines().join('\n')));
+    document.getElementById('btnOutputClear').addEventListener('click', ()=> outputBody.innerHTML='');
+    document.getElementById('btnAddRow').addEventListener('click', ()=> addRow('', ''));
+
+
+    // === Pair grid TSV ===
+    function fillPairsFromTSV(tsv){
+      tsv.replace(/\r/g,'').split('\n').forEach(line=>{
+        if(!line.trim()) return; const parts=line.includes('\t')?line.split('\t'):line.split(',');
+        const f=(parts[0]||'').trim(); const r=(parts[1]||'').trim(); if(f||r) addRow(f,r);
+      });
+    }
+    function pairsToTSV(){ return getGridData().map(([f,r])=>`${f}\t${r??''}`).join('\n'); }
+    document.getElementById('btnPasteTSV').addEventListener('click', async()=>{ try{const t=await navigator.clipboard.readText(); if(t) fillPairsFromTSV(t);}catch{} });
+    document.getElementById('btnCopyTSV').addEventListener('click', ()=> copyText(pairsToTSV()));
+
+    // === Init ===
+    setInputLines(["[LOOP_KEY:B4_L_X2]==1200 && [B4_R1_X2=1200]"]);
+    addRow('B4_L_X2','B4_X2');
+    setOutputLines(getInputLines());
+  </script>
+</body>
+</html>
