@@ -28,11 +28,7 @@
   <h2>Thay thế nội dung (giống Ctrl+H) – hỗ trợ nhập như Excel</h2>
 
   <h3>Nội dung gốc (Grid kiểu Excel)</h3>
-  <div class="toolbar">
-    <button id="btnInputPaste">Dán từ Excel</button>
-    <button id="btnInputCopy">Copy TSV</button>
-    <button id="btnInputAddRow">+ Hàng</button>
-  </div>
+
   <div class="sheet-wrap" id="inputWrap">
     <table class="sheet" id="inputSheet">
       <thead>
@@ -45,8 +41,6 @@
   <h3>Danh sách thay thế (Grid kiểu Excel – có thể dán từ Excel/Google Sheets)</h3>
   <div class="toolbar">
     <button id="btnAddRow">+ Thêm dòng</button>
-    <button id="btnPasteTSV">Dán từ Excel</button>
-    <button id="btnCopyTSV">Copy TSV</button>
   </div>
   <div class="sheet-wrap" id="sheetWrap">
     <table class="sheet" id="sheet" aria-label="Danh sách thay thế">
@@ -68,10 +62,7 @@
   </div>
 
   <h3>Kết quả (Grid kiểu Excel)</h3>
-  <div class="toolbar">
-    <button id="btnOutputCopy">Copy TSV</button>
-    <button id="btnOutputClear">🗑️ Xóa</button>
-  </div>
+
   <div class="sheet-wrap" id="outputWrap">
     <table class="sheet" id="outputSheet">
       <thead>
@@ -162,7 +153,7 @@
     }
 
     // === Input controls ===
-    document.getElementById('btnInputPaste').addEventListener('click', async()=>{
+    /*document.getElementById('btnInputPaste').addEventListener('click', async()=>{
       try{ const text=await navigator.clipboard.readText(); if(text) setInputLines(text); }catch{}
     });
     document.getElementById('btnInputCopy').addEventListener('click', ()=>{
@@ -170,7 +161,7 @@
     });
     document.getElementById('btnInputAddRow').addEventListener('click', ()=>{
       const tr=document.createElement('tr'); tr.innerHTML='<td contenteditable="true" spellcheck="false"></td>'; inputBody.appendChild(tr);
-    });
+    });*/
     document.getElementById('inputWrap').addEventListener('paste',(e)=>{
       const text=(e.clipboardData||window.clipboardData).getData('text'); if(text){ e.preventDefault(); setInputLines(text); }
     });
@@ -189,8 +180,8 @@
 
     document.getElementById('btnReload').addEventListener('click', ()=> setOutputLines(getInputLines()));
     document.getElementById('btnCopyOutput').addEventListener('click', ()=> copyText(getOutputLines().join('\n')));
-    document.getElementById('btnOutputCopy').addEventListener('click', ()=> copyText(getOutputLines().join('\n')));
-    document.getElementById('btnOutputClear').addEventListener('click', ()=> outputBody.innerHTML='');
+    //document.getElementById('btnOutputCopy').addEventListener('click', ()=> copyText(getOutputLines().join('\n')));
+    //document.getElementById('btnOutputClear').addEventListener('click', ()=> outputBody.innerHTML='');
     document.getElementById('btnAddRow').addEventListener('click', ()=> addRow('', ''));
 
 
@@ -202,8 +193,8 @@
       });
     }
     function pairsToTSV(){ return getGridData().map(([f,r])=>`${f}\t${r??''}`).join('\n'); }
-    document.getElementById('btnPasteTSV').addEventListener('click', async()=>{ try{const t=await navigator.clipboard.readText(); if(t) fillPairsFromTSV(t);}catch{} });
-    document.getElementById('btnCopyTSV').addEventListener('click', ()=> copyText(pairsToTSV()));
+    //document.getElementById('btnPasteTSV').addEventListener('click', async()=>{ try{const t=await navigator.clipboard.readText(); if(t) fillPairsFromTSV(t);}catch{} });
+    //document.getElementById('btnCopyTSV').addEventListener('click', ()=> copyText(pairsToTSV()));
 
     // === Init ===
     setInputLines(["[LOOP_KEY:B4_L_X2]==1200 && [B4_R1_X2=1200]"]);
